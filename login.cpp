@@ -3,7 +3,7 @@
 #include<windows.h>
 #define ENTER 13
 #define TAB 9
-#define BKSPC 8
+#define BCKSPC 8
 
 struct user{
 	char fullName[50];
@@ -15,14 +15,14 @@ struct user{
 
 void takeinput(char ch[50]){
 	fgets(ch,50,stdin);
-	ch[strlen(ch) -1] =0;
+	ch[strlen(ch) - 1] = 0; 
 }
 
-char generateUsername(char email[50], char username[50]){
+char generateUsername(char email[50],char username[50]){
 	//abc123@gmail.com
-	for( int i=0;1<strlen(email); i++){
-		if (email[i] == '@') break;
-		else username[i]=email[i];
+	for(int i=0;i<strlen(email);i++){
+		if(email[i] == '@') break;
+		else username[i] = email[i];
 	}
 }
 
@@ -31,62 +31,109 @@ void takepassword(char pwd[50]){
 	char ch;
 	while(1){
 		ch = getch();
-		if (ch == ENTER || ch == TAB){
+		if(ch == ENTER || ch == TAB){
 			pwd[i] = '\0';
 			break;
-		} else if(ch == BCKSPC){
+		}else if(ch == BCKSPC){
 			if(i>0){
 				i--;
-				print("\b \b"); //abc
+				printf("\b \b");
 			}
-		}else {
+		}else{
 			pwd[i++] = ch;
-			printf("* \b")
+			printf("* \b");
 		}
 	}
 }
-	
-	
+
+
 int main(){
 	system("color 0b");
 	FILE *fp;
-	int opt;
+	int opt,usrFound = 0;
 	struct user user;
-	char password[50];
+	char password2[50];
 	
-	printf("\n\t\t\t\t-------------Authentication in process------------------");
-	printf("\nPlease select your operation");
+	printf("\n\t\t\t\t----------User Authentication in progress----------");
+	printf("\nPlease choose your operation");
 	printf("\n1.Signup");
 	printf("\n2.Login");
-	printf("\3.Exit");
+	printf("\n3.Exit");
 	
-	printf("\n\nYour Choice:\t");
+	printf("\n\nYour choice:\t");
 	scanf("%d",&opt);
 	fgetc(stdin);
 	
-	
 	switch(opt){
 		case 1:
-			printf("\nEnter your full name:\t")
+			system("cls");
+			printf("\nEnter your full name:\t");
 			takeinput(user.fullName);
-			print("\nEnter your email:\t");
+			printf("Enter your email:\t");
 			takeinput(user.email);
-			printf("\Enter your contact number:\t");
+			printf("Enter your contact no:\t");
 			takeinput(user.phone);
-			printf("\nEnter your password:\t");
+			printf("Enter your password:\t");
 			takepassword(user.password);
-			printf("confirm your password:\t");
+			printf("\nConfirm your password:\t");
 			takepassword(password2);
 			
-			if(!strcmp(user.password, password2)){
-				generateUsername(user.email, user.username);
-				fp=fopen("users.dat", "a+");
+			if(!strcmp(user.password,password2)){
+				generateUsername(user.email,user.username);
+				fp = fopen("Users.dat","a+");
 				fwrite(&user,sizeof(struct user),1,fp);
-				if(fwrite !=0) printf("\n User registration succesful, your username is %s" user.username);
-				else printf("\User registration failed :");
+				if(fwrite != 0) printf("\n\nUser resgistration success, Your username is %s",user.username);
+				else printf("\n\nSorry! Something went wrong :(");
+				fclose(fp);
 			}
 			else{
-				printf("\nPassword mismatch")
+				printf("\n\nPassword Mismatch");
+				Beep(750,300);
 			}
+		break;
+		
+		case 2:
+
+			char username[50],pword[50];
+			struct user usr;
+			
+			printf("\nEnter your username:\t");
+			takeinput(username);
+			printf("Enter your password:\t");
+			takepassword(pword);
+			
+			fp = fopen("Users.dat","r");
+			while(fread(&usr,sizeof(struct user),1,fp)){
+				if(!strcmp(usr.username,username)){
+					if(!strcmp(usr.password,pword)){
+						system("cls");
+						printf("\n\t\t\t\t\t\tWelcome %s",usr.fullName);
+						printf("\n\n|Full Name:\t%s",usr.fullName);
+						printf("\n|Email:\t\t%s",usr.email);
+						printf("\n|Username:\t%s",usr.username);
+						printf("\n|Contact no.:\t%s",usr.phone);	
+					}
+					else {
+						printf("\n\nInvalid Password!");
+						Beep(800,300);
+					}
+					usrFound = 1;
+				}
+			}
+			if(!usrFound){
+				printf("\n\nUser is not registered!");
+				Beep(800,300);
+			}
+			fclose(fp);
+			break;
+			
+		case 3:
+			printf("\t\t\t Exiting application");
+			return 0;
+			
 	}
+	
+	
+	
+	return 0;
 }
